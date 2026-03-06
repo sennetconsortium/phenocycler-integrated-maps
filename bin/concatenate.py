@@ -103,44 +103,30 @@ def convert_tissue_code(tissue_code: str) -> str:
     return tissue_name
 
 
-def find_files(directory: Path, patterns: list) -> list:
+def find_files(directory: Path, pattern: str) -> list:
     matched_files = []
     for dirpath_str, dirnames, filenames in walk(directory):
         dirpath = Path(dirpath_str)
         for filename in filenames:
             filepath = dirpath / filename
-            for pattern in patterns:
-                if filepath.match(pattern):
-                    matched_files.append(filepath)
+            if filepath.match(pattern):
+                matched_files.append(filepath)
     return matched_files
 
 
 def find_files_by_type(directory: Path) -> Tuple:
-    hdf5_patterns = ["out.hdf5"]
-    cell_count_patterns = [
-        "reg1_stitched_expressions.ome.tiff-cell_channel_total.csv",
-        "reg001_expr.ome.tiff-cell_channel_total.csv",
-    ]
-    adjacency_matrix_patterns = [
-        "reg1_stitched_expressions.ome.tiff_AdjacencyMatrix.mtx",
-        "reg001_expr.ome.tiff_AdjacencyMatrix.mtx",
-    ]
-    adjacency_matrix_labels_patterns = [
-        "reg1_stitched_expressions.ome.tiff_AdjacencyMatrixRowColLabels.txt",
-        "reg001_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt",
-    ]
-    cell_centers_patterns = [
-        "reg1_stitched_expressions.ome.tiff-cell_centers.csv",
-        "reg001_expr.ome.tiff-cell_centers.csv",
-    ]
-
-    hdf5_files = find_files(directory, hdf5_patterns)
-    cell_count_files = find_files(directory, cell_count_patterns)
-    adjacency_matrix_files = find_files(directory, adjacency_matrix_patterns)
+    hdf5_pattern = "out.hdf5"
+    cell_count_pattern = "aligned_tissue_0_expr.ome.tiff-cell_channel_total.csv"
+    adjacency_matrix_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrix.mtx"
+    adjacency_matrix_labels_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt"
+    cell_centers_pattern = "aligned_tissue_0_expr.ome.tiff-cell_centers.csv"
+    hdf5_files = find_files(directory, hdf5_pattern)
+    cell_count_files = find_files(directory, cell_count_pattern)
+    adjacency_matrix_files = find_files(directory, adjacency_matrix_pattern)
     adjacency_matrix_labels_files = find_files(
-        directory, adjacency_matrix_labels_patterns
+        directory, adjacency_matrix_labels_pattern
     )
-    cell_centers_files = find_files(directory, cell_centers_patterns)
+    cell_centers_files = find_files(directory, cell_centers_pattern)
 
     return (
         hdf5_files,
@@ -156,19 +142,19 @@ def create_json(
     data_product_uuid: str,
     creation_time: str,
     uuids: list,
-    hbmids: list,
+    sntids: list,
     cell_count: int,
     file_size: int,
 ):
-    bucket_url = f"https://g-24f5cc.09193a.5898.dn.glob.us/public/hubmap-data-products/{data_product_uuid}"
+    bucket_url = f"https://sn-data-products.s3.amazonaws.com/{data_product_uuid}/"
     metadata = {
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
-        "Assay": "codex",
+        "Assay": "phenocycler",
         "Raw URL": bucket_url + f"{tissue}.h5mu",
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
-        "Dataset HBMIDs": hbmids,
+        "Dataset SNTIDs": sntids,
         "Total Cell Count": cell_count,
         "Raw File Size": file_size,
     }
@@ -237,6 +223,8 @@ def create_anndata(
     antibodies_tsv = find_antibodies_meta(raw_dir)
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
     store = pd.HDFStore(hdf5_store, "r")
+    print(store.keys())
+    print(store)
     key1 = "/total/channel/cell/expressions.ome.tiff/stitched/reg1"
     key2 = "/total/channel/cell/expr.ome.tiff/reg001"
 
@@ -336,24 +324,23 @@ def create_block_diag_adjacency_matrices(adjacency_matrices):
     return block_diag_matrix.tocsr()
 
 
-def get_processed_uuids(df:pd.DataFrame):
-    print(df["immediate_descendant_ids"])
-    df = df[df["immediate_descendant_ids"].isna()]
-    return df["uuid"].to_list(), df["hubmap_id"].to_list()
+# def get_processed_uuids(df:pd.DataFrame):
+#     print(df["immediate_descendant_ids"])
+#     df = df[df["immediate_descendant_ids"].isna()]
+#     return df["uuid"].to_list(), df["sennet_id"].to_list()
 
 
 def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     raw_output_file_name = f"{tissue}_raw.h5mu"
     uuids_df = pd.read_csv(uuids_tsv, sep="\t", dtype=str)
+    uuids_list = uuids_df["uuid"].to_list()
+    sntids_list = uuids_df["sennet_id"].to_list()
     hdf5_files_list = []
     cell_count_files_list = []
     adjacency_matrix_files_list = []
     adjacency_matrix_labels_files_list = []
     cell_centers_files_list = []
     directories = [data_dir / Path(uuid) for uuid in uuids_df["uuid"]]
-    processed_uuids, processed_hbmids = get_processed_uuids(uuids_df)
-    print(processed_uuids)
-    print(processed_hbmids)
 
     for directory in directories:
         if len(listdir(directory)) > 1:
@@ -434,7 +421,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     data_product_uuid = str(uuid.uuid4())
     total_cell_count = combined_adata.obs.shape[0]
     combined_adata.uns["creation_data_time"] = creation_time
-    combined_adata.uns["datasets"] = processed_hbmids
+    combined_adata.uns["datasets"] = sntids_list
     combined_adata.uns["uuid"] = data_product_uuid
     for key in combined_adata.varm.keys():
         combined_adata.varm[key] = combined_adata.varm[key].astype(str)
@@ -450,7 +437,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     combined_adata = combined_adata[:, filtered_var_index].copy()
     combined_adata.obs['object_type'] = 'ftu'
     combined_adata.obs['analyte_class'] = 'Protein'
-    combined_adata.uns['protocol'] = 'https://github.com/hubmapconsortium/codex-data-products'
+    combined_adata.uns['protocol'] = 'https://github.com/sennetconsortium/phenocycler-integrated-maps'
     mdata = md.MuData({f"{data_product_uuid}_raw": combined_adata})
     mdata.uns['epic_type'] = 'analyses'
     mdata.write(raw_output_file_name)
@@ -461,8 +448,8 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
         tissue,
         data_product_uuid,
         creation_time,
-        processed_uuids,
-        processed_hbmids,
+        uuids_list,
+        sntids_list,
         total_cell_count,
         file_size,
     )
