@@ -4,7 +4,7 @@ label: Annotates each h5ad file with dataset and tissue type, then concatenates
 
 hints:
   DockerRequirement:
-    dockerPull: hubmap/codex-data-products
+    dockerPull: sennet/phenocycler-maps
 baseCommand: /opt/concatenate.py
 
 inputs:

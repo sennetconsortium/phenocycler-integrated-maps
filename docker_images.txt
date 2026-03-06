@@ -1,1 +1,1 @@
-hubmap/codex-data-products docker/Dockerfile base_directory_build
+sennet/phenocycler-maps docker/Dockerfile base_directory_build
