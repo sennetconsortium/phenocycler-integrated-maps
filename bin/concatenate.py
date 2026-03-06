@@ -217,10 +217,9 @@ def create_anndata(
 ) -> anndata.AnnData:
     data_set_dir = fspath(hdf5_store.parent.stem)
     parent_uuid = uuids_df.loc[
-        uuids_df["uuid"] == data_set_dir, "immediate_ancestor_ids"
+        uuids_df["uuid"] == data_set_dir, "ancestors"
     ].item()
-    raw_dir = data_directory / parent_uuid
-    antibodies_tsv = find_antibodies_meta(raw_dir)
+    antibodies_tsv = find_antibodies_meta(data_set_dir)
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
     store = pd.HDFStore(hdf5_store, "r")
     print(store.keys())
