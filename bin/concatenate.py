@@ -149,7 +149,7 @@ def create_json(
         "Data Product UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
         "Assay": "phenocycler",
-        "Raw URL": bucket_url + f"{tissue}.h5mu",
+        "Raw URL": bucket_url + f"{tissue}_raw.h5mu",
         "Creation Time": creation_time,
         "Dataset UUIDs": uuids,
         "Dataset SNTIDs": sntids,
