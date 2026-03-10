@@ -170,9 +170,9 @@ def get_column_names(cell_count_file: Path) -> list:
 
 def standardize_antb_df(antibodies_df: pd.DataFrame) -> pd.DataFrame:
     for idx, row in antibodies_df.iterrows():
-        stripped_name = get_analyte_name(antibodies_df.at[idx, "antibody_name"])
+        stripped_name = get_analyte_name(antibodies_df.at[idx, "channel_id"])
         new_name = find_antibody_key(stripped_name)
-        antibodies_df.at[idx, "antibody_name"] = new_name
+        antibodies_df.at[idx, "channel_id"] = new_name
     return antibodies_df
 
 
