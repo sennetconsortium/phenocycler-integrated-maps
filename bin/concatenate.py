@@ -96,19 +96,34 @@ def find_files(directory: Path, pattern: str) -> list:
     return matched_files
 
 
+def find_antibodies_meta(input_dir: Path) -> Optional[Path]:
+    metadata_filename_pattern = re.compile(r"^[0-9A-Za-z\-_]*antibodies\.tsv$")
+    found_files = []
+    for dirpath, dirnames, filenames in walk(input_dir):
+        for filename in filenames:
+            if metadata_filename_pattern.match(filename):
+                found_files.append(Path(dirpath) / filename)
+
+    if len(found_files) == 0:
+        logger.warning("No antibody.tsv file found")
+        antb_path = None
+    else:
+        antb_path = found_files[0]
+    return antb_path
+
+
 def find_files_by_type(directory: Path) -> Tuple:
     hdf5_pattern = "out.hdf5"
     cell_count_pattern = "aligned_tissue_0_expr.ome.tiff-cell_channel_total.csv"
     adjacency_matrix_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrix.mtx"
     adjacency_matrix_labels_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt"
     cell_centers_pattern = "aligned_tissue_0_expr.ome.tiff-cell_centers.csv"
-    antb_pattern = re.compile(r".*antibodies\.tsv$")
     hdf5_files = find_files(directory, hdf5_pattern)
     cell_count_files = find_files(directory, cell_count_pattern)
     adjacency_matrix_files = find_files(directory, adjacency_matrix_pattern)
     adjacency_matrix_labels_files = find_files(directory, adjacency_matrix_labels_pattern)
     cell_centers_files = find_files(directory, cell_centers_pattern)
-    antb_files = find_files(directory, antb_pattern)
+    antb_files = find_antibodies_meta(directory)
 
     return (
         hdf5_files,
