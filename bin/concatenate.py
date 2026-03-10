@@ -186,6 +186,7 @@ def create_varm_dfs(
     uniprot_df = pd.DataFrame(index=adata.var.index, columns=[uuid])
     rrid_df = pd.DataFrame(index=adata.var.index, columns=[uuid])
     antibodies_tsv_id_df = pd.DataFrame(index=adata.var.index, columns=[uuid])
+    hgnc_df = pd.DataFrame(index=adata.var.index, columns=[uuid])
 
     # Fill in the DataFrames with matching values from antibodies_df
     matching_antibodies = antibodies_df[
@@ -202,7 +203,10 @@ def create_varm_dfs(
         antibodies_tsv_id_df.iloc[protein_idx, 0] = matching_antibodies.loc[
             matching_antibodies["channel_id"] == antibody, "channel_id"
         ].values[0]
-    return uniprot_df, rrid_df, antibodies_tsv_id_df
+        hgnc_df.iloc[protein_idx, 0] = matching_antibodies.loc[
+            matching_antibodies["channel_id"] == antibody, "hgnc_symbol"
+        ]
+    return uniprot_df, rrid_df, antibodies_tsv_id_df, hgnc_df
 
 
 def create_anndata(
@@ -262,13 +266,14 @@ def create_anndata(
     ].to_numpy()
 
     if antibodies_tsv and var_antb_tsv_intersection:
-        uniprot_df, rrid_df, antb_tsv_id_df = create_varm_dfs(
+        uniprot_df, rrid_df, antb_tsv_id_df, hgnc_df = create_varm_dfs(
             adata, data_set_dir, antibodies_df, var_antb_tsv_intersection
         )
         # Store these DataFrames in .varm with the dataset UUID as columns
-        adata.varm["UniprotID"] = uniprot_df
-        adata.varm["RRID"] = rrid_df
-        adata.varm["AntibodiesTsvID"] = antb_tsv_id_df
+        adata.varm["uniprot_accession_number"] = uniprot_df
+        adata.varm["antibody_rrid"] = rrid_df
+        adata.varm["channel_id"] = antb_tsv_id_df
+        adata.varm["hgnc_symbol"] = hgnc_df
 
     return adata
 
@@ -308,12 +313,6 @@ def create_block_diag_adjacency_matrices(adjacency_matrices):
     block_diag_matrix = block_diag(adjacency_matrices, format="coo")
 
     return block_diag_matrix.tocsr()
-
-
-# def get_processed_uuids(df:pd.DataFrame):
-#     print(df["immediate_descendant_ids"])
-#     df = df[df["immediate_descendant_ids"].isna()]
-#     return df["uuid"].to_list(), df["sennet_id"].to_list()
 
 
 def main(data_dir: Path, uuids_tsv: Path, tissue: str):
@@ -399,9 +398,9 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
             combined_adata.var.index, fill_value=np.nan
         )
 
-    combined_adata.varm["RRID"] = varms_dict["RRID"]
-    combined_adata.varm["UniprotID"] = varms_dict["UniprotID"]
-    combined_adata.varm["AntibodiesTsvID"] = varms_dict["AntibodiesTsvID"]
+    combined_adata.varm["antibody_rrid"] = varms_dict["antibody_rrid"]
+    combined_adata.varm["uniprot_accession_number"] = varms_dict["uniprot_accession_number"]
+    combined_adata.varm["channel_id"] = varms_dict["channel_id"]
 
     # Add patient metadata to obs
     obs_w_patient_info = add_patient_metadata(combined_adata.obs, uuids_df)
