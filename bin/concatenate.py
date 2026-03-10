@@ -189,18 +189,18 @@ def create_varm_dfs(
 
     # Fill in the DataFrames with matching values from antibodies_df
     matching_antibodies = antibodies_df[
-        antibodies_df["antibody_name"].isin(var_antb_tsv_intersection)
+        antibodies_df["channel_id"].isin(var_antb_tsv_intersection)
     ]
     for antibody in var_antb_tsv_intersection:
         protein_idx = adata.var.index.get_loc(antibody)
         uniprot_df.iloc[protein_idx, 0] = matching_antibodies.loc[
-            matching_antibodies["antibody_name"] == antibody, "uniprot_accession_number"
+            matching_antibodies["channel_id"] == antibody, "uniprot_accession_number"
         ].values[0]
         rrid_df.iloc[protein_idx, 0] = matching_antibodies.loc[
-            matching_antibodies["antibody_name"] == antibody, "rr_id"
+            matching_antibodies["channel_id"] == antibody, "antibody_rrid"
         ].values[0]
         antibodies_tsv_id_df.iloc[protein_idx, 0] = matching_antibodies.loc[
-            matching_antibodies["antibody_name"] == antibody, "channel_id"
+            matching_antibodies["channel_id"] == antibody, "channel_id"
         ].values[0]
     return uniprot_df, rrid_df, antibodies_tsv_id_df
 
@@ -222,8 +222,7 @@ def create_anndata(
     store = pd.HDFStore(hdf5_store, "r")
     print(store.keys())
     print(store)
-    key1 = "/total/channel/cell/expressions.ome.tiff/stitched/reg1"
-    key2 = "/total/channel/cell/expr.ome.tiff/reg001"
+    key = "/total/channel/cell/expr.ome.tiff/0/tissue/aligned"
 
     # Get channel names
     var_names = get_column_names(cell_count_file)
@@ -232,22 +231,14 @@ def create_anndata(
 
     if antibodies_tsv:
         antibodies_df = pd.read_csv(antibodies_tsv, sep="\t", dtype=str)
-        print(antibodies_df.head())
-        print(antibodies_df.columns)
         antibodies_df = standardize_antb_df(antibodies_df)
-        antibodies_tsv_list = antibodies_df["antibody_name"].to_list()
+        antibodies_tsv_list = antibodies_df["channel_id"].to_list()
         var_antb_tsv_intersection = [
             value for value in var_names if value in antibodies_tsv_list
         ]
 
-    if key1 in store:
-        matrix = store[key1]
-        mean_layer_matrix = store[
-            "/meanAll/channel/cell/expressions.ome.tiff/stitched/reg1"
-        ]
-    elif key2 in store:
-        matrix = store[key2]
-        mean_layer_matrix = store["/meanAll/channel/cell/expr.ome.tiff/reg001"]
+    matrix = store[key]
+    mean_layer_matrix = store["/meanAll/channel/cell/expr.ome.tiff/0/tissue/aligned"]
     store.close()
 
     adata = anndata.AnnData(X=matrix, dtype=np.float64)
