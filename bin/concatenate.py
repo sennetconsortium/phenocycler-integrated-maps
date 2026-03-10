@@ -233,6 +233,7 @@ def create_anndata(
     if antibodies_tsv:
         antibodies_df = pd.read_csv(antibodies_tsv, sep="\t", dtype=str)
         print(antibodies_df.head())
+        print(antibodies_df.columns)
         antibodies_df = standardize_antb_df(antibodies_df)
         antibodies_tsv_list = antibodies_df["antibody_name"].to_list()
         var_antb_tsv_intersection = [
