@@ -220,8 +220,6 @@ def create_anndata(
     ].item()
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
     store = pd.HDFStore(hdf5_store, "r")
-    print(store.keys())
-    print(store)
     key = "/total/channel/cell/expr.ome.tiff/0/tissue/aligned"
 
     # Get channel names
@@ -280,8 +278,6 @@ def add_patient_metadata(obs, uuids_df):
     merged = merged.set_index(obs.index)
     merged = merged.drop(columns=["Unnamed: 0"])
     merged = merged.fillna(np.nan)
-    merged["age"] = pd.to_numeric(merged["age"])
-    obs = obs.loc[:, ~obs.columns.str.contains("^Unnamed")]
     return merged
 
 
