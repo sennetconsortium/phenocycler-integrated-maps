@@ -1,4 +1,4 @@
-name: codex-data-products
+name: pheno-maps
 channels:
   - conda-forge
   - defaults
