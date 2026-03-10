@@ -42,24 +42,6 @@ antibodies_dict = {
 }
 
 
-def find_antibodies_meta(input_dir: Path) -> Optional[Path]:
-    """
-    Looks for metadata files matching the pattern for antibodies in the given UUID directory.
-    """
-    metadata_filename_pattern = re.compile(r".*antibodies\.tsv$")
-    found_files = []
-
-    for filename in listdir(input_dir):
-        if metadata_filename_pattern.match(filename):
-            found_files.append(Path(input_dir) / filename)
-
-    if found_files:
-        return found_files[0]  # Return the first matching file
-    else:
-        logger.warning(f"No antibody file found in {input_dir}")
-        return None
-
-
 def get_analyte_name(antibody_name: str) -> str:
     """
     Strips unnecessary prefixes and suffixes off of antibody name from antibodies.tsv.
@@ -120,13 +102,13 @@ def find_files_by_type(directory: Path) -> Tuple:
     adjacency_matrix_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrix.mtx"
     adjacency_matrix_labels_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt"
     cell_centers_pattern = "aligned_tissue_0_expr.ome.tiff-cell_centers.csv"
+    antb_pattern = re.compile(r".*antibodies\.tsv$")
     hdf5_files = find_files(directory, hdf5_pattern)
     cell_count_files = find_files(directory, cell_count_pattern)
     adjacency_matrix_files = find_files(directory, adjacency_matrix_pattern)
-    adjacency_matrix_labels_files = find_files(
-        directory, adjacency_matrix_labels_pattern
-    )
+    adjacency_matrix_labels_files = find_files(directory, adjacency_matrix_labels_pattern)
     cell_centers_files = find_files(directory, cell_centers_pattern)
+    antb_files = find_files(directory, antb_pattern)
 
     return (
         hdf5_files,
@@ -134,6 +116,7 @@ def find_files_by_type(directory: Path) -> Tuple:
         adjacency_matrix_files,
         adjacency_matrix_labels_files,
         cell_centers_files,
+        antb_files
     )
 
 
@@ -214,12 +197,12 @@ def create_anndata(
     cell_centers_file: Path,
     cell_count_file: Path,
     data_directory: Path,
+    antibodies_tsv: Path,
 ) -> anndata.AnnData:
     data_set_dir = fspath(hdf5_store.parent.stem)
     parent_uuid = uuids_df.loc[
         uuids_df["uuid"] == data_set_dir, "ancestors"
     ].item()
-    antibodies_tsv = find_antibodies_meta(data_set_dir)
     tissue_type = tissue_type if tissue_type else get_tissue_type(data_set_dir)
     store = pd.HDFStore(hdf5_store, "r")
     print(store.keys())
@@ -339,6 +322,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     adjacency_matrix_files_list = []
     adjacency_matrix_labels_files_list = []
     cell_centers_files_list = []
+    antb_files_list = []
     directories = [data_dir / Path(uuid) for uuid in uuids_df["uuid"]]
 
     for directory in directories:
@@ -349,12 +333,14 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
                 adjacency_matrix_files,
                 adjacency_matrix_labels_files,
                 cell_centers_files,
+                antb_files,
             ) = find_files_by_type(directory)
             hdf5_files_list.extend(hdf5_files)
             cell_count_files_list.extend(cell_count_files)
             adjacency_matrix_files_list.extend(adjacency_matrix_files)
             adjacency_matrix_labels_files_list.extend(adjacency_matrix_labels_files)
             cell_centers_files_list.extend(cell_centers_files)
+            antb_files_list.extend(antb_files)
 
     # Create the AnnData objects and process adjacency matrices
     adatas = []
@@ -367,15 +353,17 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
         adjacency_file,
         label_file,
         cell_count_file,
+        antb_file
     ) in zip(
         hdf5_files_list,
         cell_centers_files_list,
         adjacency_matrix_files_list,
         adjacency_matrix_labels_files_list,
         cell_count_files_list,
+        antb_files_list
     ):
         adata = create_anndata(
-            hdf5_file, tissue, uuids_df, cell_centers_file, cell_count_file, data_dir
+            hdf5_file, tissue, uuids_df, cell_centers_file, cell_count_file, data_dir, antb_file
         )
         adatas.append(adata)
         # Save the values in .varm
