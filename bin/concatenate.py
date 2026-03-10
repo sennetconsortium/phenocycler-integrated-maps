@@ -96,7 +96,7 @@ def find_files(directory: Path, pattern: str) -> list:
     return matched_files
 
 
-def find_antibodies_meta(input_dir: Path) -> Optional[Path]:
+def find_antibodies_meta(input_dir: Path):
     metadata_filename_pattern = re.compile(r".*antibodies.*\.tsv$")
     found_files = []
     for dirpath, dirnames, filenames in walk(input_dir):
@@ -109,7 +109,7 @@ def find_antibodies_meta(input_dir: Path) -> Optional[Path]:
         antb_path = None
     else:
         antb_path = found_files[0]
-    return antb_path
+    return [antb_path]
 
 
 def find_files_by_type(directory: Path) -> Tuple:
