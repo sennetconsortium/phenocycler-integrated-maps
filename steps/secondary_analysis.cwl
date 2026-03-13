@@ -28,7 +28,7 @@ outputs:
             glob: "*_processed.h5mu"
         doc: h5mu file with concatenated codex datasets
 
-    metadata_json:
+    final_metadata_json:
         type: File
         outputBinding:
             glob: "*.json"
