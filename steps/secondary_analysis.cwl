@@ -18,8 +18,13 @@ inputs:
         label: "metadata about the map"
         type: File
         inputBinding:
-            position: 0
+            position: 1
 
+   tissue:
+        label: "tissue type"
+        type: string
+        inputBinding:
+            position: 2
 
 outputs:
     processed_h5mu:
