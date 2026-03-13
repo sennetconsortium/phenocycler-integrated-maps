@@ -15,6 +15,7 @@ dependencies:
       - scanpy
       - zarr
       - muon
+      - mudata
       - tables
       - pyyaml
       - requests
