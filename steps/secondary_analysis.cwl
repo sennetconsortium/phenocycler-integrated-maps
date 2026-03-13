@@ -20,7 +20,7 @@ inputs:
         inputBinding:
             position: 1
 
-   tissue:
+    tissue:
         label: "tissue type"
         type: string
         inputBinding:
