@@ -92,8 +92,8 @@ def main(
 if __name__ == "__main__":
     p = ArgumentParser()
     p.add_argument("raw_h5mu_file", type=Path)
-    p.add_argument("tissue", type=str, nargs="?")
     p.add_argument("integrated_map_metadata", type=Path)
+    p.add_argument("tissue", type=str, nargs="?")
     p.add_argument("--enable_manhole", action="store_true")
 
     args = p.parse_args()
