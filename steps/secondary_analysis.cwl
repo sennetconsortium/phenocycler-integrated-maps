@@ -5,7 +5,7 @@ label: Annotates each h5ad file with dataset and tissue type, then concatenates
 hints:
   DockerRequirement:
     dockerPull: sennet/phenocycler-maps
-baseCommand: /opt/concatenate.py
+baseCommand: /opt/secondary_analysis.py
 
 inputs:
     raw_h5mu:
