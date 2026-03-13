@@ -37,13 +37,12 @@ def main(
         metadata = json.load(infile)
     uuid = metadata["Integrated Map UUID"]
     adata = raw_mudata.mod[f'{uuid}_raw']
+    print(adata)
+    print(adata.obs)
 
     print("Processing integrated map...")
     adata.var_names_make_unique()
     adata.obs_names_make_unique()
-
-    sc.pp.filter_cells(adata, min_genes=200)
-    sc.pp.filter_genes(adata, min_cells=3)
 
     adata.obs["n_counts"] = adata.X.sum(axis=1)
 
