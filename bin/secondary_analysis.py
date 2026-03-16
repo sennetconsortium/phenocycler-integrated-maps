@@ -37,8 +37,6 @@ def main(
         metadata = json.load(infile)
     uuid = metadata["Integrated Map UUID"]
     adata = raw_mudata.mod[f'{uuid}_raw']
-    print(adata)
-    print(adata.obs)
 
     print("Processing integrated map...")
     adata.var_names_make_unique()
@@ -56,7 +54,6 @@ def main(
 
     # leiden clustering
     sc.tl.leiden(adata)
-    sc.tl.rank_genes_groups(adata, "leiden")
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
