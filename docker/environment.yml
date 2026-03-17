@@ -20,6 +20,7 @@ dependencies:
       - tables
       - pyyaml
       - requests
+      - 'rapids-singlecell-cu13[rapids]' --extra-index-url=https://pypi.nvidia.com
       - cupy-cuda13x
       - tensorflow
       - cuml-cu13
