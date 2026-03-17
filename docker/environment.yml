@@ -20,5 +20,5 @@ dependencies:
       - pyyaml
       - requests
       - rapids-singlecell
-      - cupy
+      - cupy-cuda13x
       - tensorflow
