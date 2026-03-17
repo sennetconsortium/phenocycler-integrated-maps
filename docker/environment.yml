@@ -19,7 +19,7 @@ dependencies:
       - tables
       - pyyaml
       - requests
-      - rapids-singlecell
+      - rapids-singlecell-cu13
       - cupy-cuda13x
       - tensorflow
       - cuml-cu13
