@@ -49,7 +49,7 @@ def main(
     adata.layers["unscaled"] = adata.X.copy()
     sc.pp.scale(adata, max_value=10)
 
-    sc.pp.neighbors(adata, n_neighbors=50, n_pcs=50)
+    sc.pp.neighbors(adata, n_neighbors=50)
     sc.tl.umap(adata)
 
     # leiden clustering
