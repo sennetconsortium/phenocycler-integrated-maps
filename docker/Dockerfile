@@ -28,7 +28,7 @@ RUN conda env create -f /opt/environment.yml
 ENV CONDA_ENV_NAME=pheno-maps
 ENV CONDA_PREFIX=/opt/conda/envs/${CONDA_ENV_NAME}
 ENV PATH=${CONDA_PREFIX}/bin:$PATH
-RUN pip install rapids-singlecell-cu13[rapids] --extra-index-url=https://pypi.nvidia.com
+#RUN pip install 'rapids-singlecell-cu13[rapids]' --extra-index-url=https://pypi.nvidia.com
 
 
 COPY bin/ /opt
