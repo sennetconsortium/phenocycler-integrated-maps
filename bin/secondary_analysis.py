@@ -12,6 +12,7 @@ import numpy as np
 import os
 import pandas as pd
 import scanpy as sc
+import rapids_singlecell as rsc
 
 
 def add_file_sizes(data_product_metadata, raw_size):
@@ -38,28 +39,35 @@ def main(
     uuid = metadata["Integrated Map UUID"]
     adata = raw_mudata.mod[f'{uuid}_raw']
 
+    # Move .X to the GPU for rsc
+    rsc.get.anndata_to_GPU(adata)
+
     print("Processing integrated map...")
     adata.var_names_make_unique()
     adata.obs_names_make_unique()
 
     adata.obs["n_counts"] = adata.X.sum(axis=1)
 
-    sc.pp.normalize_total(adata, target_sum=1e4)
-    sc.pp.log1p(adata)
+    rsc.pp.normalize_total(adata, target_sum=1e4)
+    rsc.pp.log1p(adata)
     adata.layers["unscaled"] = adata.X.copy()
-    sc.pp.scale(adata, max_value=10)
+    rsc.pp.scale(adata, max_value=10)
 
-    sc.pp.neighbors(adata, n_neighbors=50)
-    sc.tl.umap(adata)
+    rsc.pp.neighbors(adata, n_neighbors=50)
+    rsc.tl.umap(adata)
 
     # leiden clustering
-    sc.tl.leiden(adata)
+    rsc.tl.leiden(adata)
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
             metadata, total_cell_count
         )
 
+    # Move .X back to the CPU to plot
+    rsc.get.anndata_to_CPU(adata)
+
+    # Plot
     with plt.rc_context():
         sc.pl.umap(adata, color="leiden", show=False)
         plt.savefig(f"{uuid}.png", bbox_inches="tight")

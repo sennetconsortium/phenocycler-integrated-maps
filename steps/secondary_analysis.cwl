@@ -1,10 +1,11 @@
-cwlVersion: v1.0
+cwlVersion: v1.1
 class: CommandLineTool
 label: Annotates each h5ad file with dataset and tissue type, then concatenates
 
-hints:
+requirements:
   DockerRequirement:
     dockerPull: sennet/phenocycler-maps
+  DockerGpuRequirement: {}
 baseCommand: /opt/secondary_analysis.py
 
 inputs:

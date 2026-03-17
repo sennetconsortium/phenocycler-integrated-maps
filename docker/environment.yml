@@ -19,3 +19,4 @@ dependencies:
       - tables
       - pyyaml
       - requests
+      - rapids-singlecell
