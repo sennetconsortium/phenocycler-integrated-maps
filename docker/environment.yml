@@ -22,3 +22,4 @@ dependencies:
       - rapids-singlecell
       - cupy-cuda13x
       - tensorflow
+      - cuml
