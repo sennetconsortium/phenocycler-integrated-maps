@@ -20,8 +20,9 @@ dependencies:
       - tables
       - pyyaml
       - requests
-      - cupy-cuda13x
+      - cupy-cuda12x
       - tensorflow
-      - cuml-cu13
+      - cuml-cu12
       - nvidia-cuda-nvcc
       - cmake
+      - numba
