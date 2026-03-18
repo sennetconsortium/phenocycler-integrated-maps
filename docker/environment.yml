@@ -23,3 +23,6 @@ dependencies:
       - cupy-cuda13x
       - tensorflow
       - cuml-cu13
+      - nvcc
+      - cmake
+      - rapids-singlecell
