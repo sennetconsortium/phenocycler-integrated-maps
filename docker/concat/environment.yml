@@ -8,7 +8,6 @@ dependencies:
   - pandas
   - scipy
   - pip
-  - dask
   - pip:
       - anndata
       - leidenalg
@@ -20,9 +19,3 @@ dependencies:
       - tables
       - pyyaml
       - requests
-      - cupy-cuda12x
-      - tensorflow
-      - cuml-cu12
-      - nvidia-cuda-nvcc
-      - cmake
-      - numba

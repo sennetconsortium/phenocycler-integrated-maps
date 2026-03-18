@@ -1,1 +1,2 @@
-sennet/phenocycler-maps docker/Dockerfile base_directory_build
+sennet/phenocycler-maps docker/concat/Dockerfile base_directory_build
+sennet/rsc docker/rapids-singlecell base_directory_build
