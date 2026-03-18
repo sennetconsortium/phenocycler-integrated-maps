@@ -25,4 +25,3 @@ dependencies:
       - cuml-cu13
       - nvidia-cuda-nvcc
       - cmake
-      - rapids-singlecell-cu13
