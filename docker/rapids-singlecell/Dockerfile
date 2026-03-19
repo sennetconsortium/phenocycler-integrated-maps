@@ -17,10 +17,14 @@ RUN apt-get update \
     zlib1g-dev \
     software-properties-common \
     pkg-config \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-venv \
+ && rm -rf /var/cache/apt/*
+
+RUN add-apt-repository ppa:deadsnakes/ppa
+
+RUN apt-get -y install \
+    python3.9 \
+    python3.9-dev \
+    python3.9-pip \
     python3.9-venv \
  && rm -rf /var/cache/apt/*
 
