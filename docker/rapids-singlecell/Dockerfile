@@ -25,7 +25,7 @@ RUN apt-get update \
 ## Python packages
 RUN python3 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
-COPY docker/analysis/requirements.txt /opt/requirements.txt
+COPY docker/rapids-singlecell/requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt \
  && rm -rf /root/.cache/pip
 
