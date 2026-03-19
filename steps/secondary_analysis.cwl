@@ -38,3 +38,8 @@ outputs:
         outputBinding:
             glob: "*.json"
         doc: json containing data product info
+    umap:
+        type: File
+        outputBinding:
+            glob: "*.png"
+        doc: umap embedding
