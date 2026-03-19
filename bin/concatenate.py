@@ -146,7 +146,7 @@ def create_json(
 ):
     bucket_url = f"https://sn-data-products.s3.amazonaws.com/{data_product_uuid}/"
     metadata = {
-        "Data Product UUID": data_product_uuid,
+        "Integrated Map UUID": data_product_uuid,
         "Tissue": convert_tissue_code(tissue),
         "Assay": "phenocycler",
         "Raw URL": bucket_url + f"{tissue}_raw.h5mu",
