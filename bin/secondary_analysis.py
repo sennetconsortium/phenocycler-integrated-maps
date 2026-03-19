@@ -40,7 +40,7 @@ def main(
     adata.var_names_make_unique()
     adata.obs_names_make_unique()
 
-    adata.obs["n_counts"] = adata.X.sum(axis=1)
+    adata.obs["n_counts"] = adata.X.sum(axis=1).get()
 
     rsc.pp.normalize_total(adata, target_sum=1e4)
     rsc.pp.log1p(adata)
