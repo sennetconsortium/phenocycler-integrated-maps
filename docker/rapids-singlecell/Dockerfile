@@ -14,16 +14,18 @@ RUN apt-get update \
     libxml2-dev \
     libtool \
     m4 \
-    pkg-config \
-    python3.9 \
-    python3.9-dev \
-    python3.9-pip \
-    python3.9-venv \
     zlib1g-dev \
+    software-properties-common \
+    pkg-config \
+    python3 \
+    python3-dev \
+    python3-pip \
+    python3-venv \
+    python3.9-venv \
  && rm -rf /var/cache/apt/*
 
 ## Python packages
-RUN python3 -m venv /opt/venv
+RUN python3.9 -m venv /opt/venv
 ENV PATH="/opt/venv/bin:$PATH"
 COPY docker/rapids-singlecell/requirements.txt /opt/requirements.txt
 RUN pip3 install -r /opt/requirements.txt \
