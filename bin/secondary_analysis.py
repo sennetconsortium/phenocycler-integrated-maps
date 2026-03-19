@@ -28,7 +28,7 @@ def main(
         f"{tissue}_processed" if tissue else "phenocycler_processed"
     )
     # Open files and extract necessary information
-    adata = ad.read_h5mu(raw_h5ad_file)
+    adata = ad.read_h5ad(raw_h5ad_file)
     with open(integrated_map_metadata, "r") as infile:
         metadata = json.load(infile)
     uuid = metadata["Integrated Map UUID"]
