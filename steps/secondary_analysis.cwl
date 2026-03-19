@@ -4,13 +4,12 @@ label: Annotates each h5ad file with dataset and tissue type, then concatenates
 
 requirements:
   DockerRequirement:
-    dockerPull: sennet/phenocycler-maps
+    dockerPull: sennet/rsc
   DockerGpuRequirement: {}
 baseCommand: /opt/secondary_analysis.py
 
 inputs:
-    raw_h5mu:
-        label: "Where the h5ad files are"
+    raw_h5ad:
         type: File
         inputBinding:
             position: 0
@@ -28,13 +27,13 @@ inputs:
             position: 2
 
 outputs:
-    processed_h5mu:
+    processed_h5ad:
         type: File
         outputBinding:
-            glob: "*_processed.h5mu"
-        doc: h5mu file with concatenated codex datasets
+            glob: "*_processed.h5ad"
+        doc: h5ad file with processed phenocycler datasets
 
-    final_metadata_json:
+    updated_metadata_json:
         type: File
         outputBinding:
             glob: "*.json"

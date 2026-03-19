@@ -4,19 +4,14 @@ from argparse import ArgumentParser
 from matplotlib import cm
 from pathlib import Path
 
-import anndata
+import anndata as ad
 import json
 import matplotlib.pyplot as plt
-import mudata as md
 import numpy as np
 import os
 import pandas as pd
-import scanpy as sc
 import rapids_singlecell as rsc
-
-
-def add_file_sizes(data_product_metadata, raw_size):
-    data_product_metadata["Raw File Size"] = raw_size
+import scanpy as sc
 
 
 def add_cell_counts(integrated_map_metadata, total_cell_count):
@@ -25,19 +20,18 @@ def add_cell_counts(integrated_map_metadata, total_cell_count):
 
 
 def main(
-    raw_h5mu_file: Path,
+    raw_h5ad_file: Path,
     integrated_map_metadata: Path,
     tissue: str = None,
 ):
     processed_output_file_name = (
-        f"{tissue}_processed.h5mu" if tissue else "phenocycler_processed.h5mu"
+        f"{tissue}_processed" if tissue else "phenocycler_processed"
     )
     # Open files and extract necessary information
-    raw_mudata = md.read_h5mu(raw_h5mu_file)
+    adata = ad.read_h5mu(raw_h5ad_file)
     with open(integrated_map_metadata, "r") as infile:
         metadata = json.load(infile)
     uuid = metadata["Integrated Map UUID"]
-    adata = raw_mudata.mod[f'{uuid}_raw']
 
     # Move .X to the GPU for rsc
     rsc.get.anndata_to_GPU(adata)
@@ -84,13 +78,8 @@ def main(
         'protocol': "10.1186/s13059-017-1382-0",
     }
 
-    mdata = md.MuData({f"{uuid}_processed": adata})
-    mdata.uns["epic_type "] = ['analyses', 'annotations']
-
     print(f"Writing {processed_output_file_name}")
-    mdata.write(processed_output_file_name)
-    processed_file_size = os.path.getsize(processed_output_file_name)
-    add_file_sizes(metadata, processed_file_size)
+    adata.write(f"{processed_output_file_name}.h5ad")
 
 
 if __name__ == "__main__":

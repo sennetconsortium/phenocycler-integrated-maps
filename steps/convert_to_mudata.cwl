@@ -1,40 +1,39 @@
-cwlVersion: v1.0
+cwlVersion: v1.1
 class: CommandLineTool
 label: Annotates each h5ad file with dataset and tissue type, then concatenates
 
-hints:
+requirements:
   DockerRequirement:
     dockerPull: sennet/phenocycler-maps
-baseCommand: /opt/concatenate.py
+baseCommand: /opt/convert_to_mudata.py
 
 inputs:
-    data_directory:
-        label: "Where the h5ad files are"
-        type: Directory
+    processed_h5ad:
+        type: File
         inputBinding:
             position: 0
-    
-    uuids_file:
-        label: "TSV with metadata"
+
+    updated_metadata_json:
+        label: "metadata about the map"
         type: File
         inputBinding:
             position: 1
-    
+
     tissue:
-        label: "Two letter tissue code"
-        type: string?
+        label: "tissue type"
+        type: string
         inputBinding:
             position: 2
 
 outputs:
-    processed_h5mu_file:
+    processed_h5ad:
         type: File
         outputBinding:
-            glob: "*.h5mu"
-        doc: h5mu file with concatenated codex datasets
-    
-    metadata_json:
+            glob: "*_processed.h5ad"
+        doc: h5ad file with processed phenocycler datasets
+
+    final_metadata_json:
         type: File
-        outputBinding: 
+        outputBinding:
             glob: "*.json"
         doc: json containing data product info

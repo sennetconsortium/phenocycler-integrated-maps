@@ -316,7 +316,7 @@ def create_block_diag_adjacency_matrices(adjacency_matrices):
 
 
 def main(data_dir: Path, uuids_tsv: Path, tissue: str):
-    raw_output_file_name = f"{tissue}_raw.h5mu"
+    raw_output_file_name = f"{tissue}_raw"
     uuids_df = pd.read_csv(uuids_tsv, sep="\t", dtype=str)
     uuids_list = uuids_df["uuid"].to_list()
     sntids_list = uuids_df["sennet_id"].to_list()
@@ -428,9 +428,10 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     combined_adata.obs['object_type'] = 'ftu'
     combined_adata.obs['analyte_class'] = 'Protein'
     combined_adata.uns['protocol'] = 'https://github.com/sennetconsortium/phenocycler-integrated-maps'
+    combined_adata.write(f"{raw_output_file_name}.h5ad")
     mdata = md.MuData({f"{data_product_uuid}_raw": combined_adata})
     mdata.uns['epic_type'] = 'analyses'
-    mdata.write(raw_output_file_name)
+    mdata.write(f"{raw_output_file_name}.h5mu")
 
     # Save data product metadata
     file_size = os.path.getsize(raw_output_file_name)
