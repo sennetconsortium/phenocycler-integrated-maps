@@ -15,10 +15,10 @@ RUN apt-get update \
     libtool \
     m4 \
     pkg-config \
-    python3 \
-    python3-dev \
-    python3-pip \
-    python3-venv \
+    python3.9 \
+    python3.9-dev \
+    python3.9-pip \
+    python3.9-venv \
     zlib1g-dev \
  && rm -rf /var/cache/apt/*
 
