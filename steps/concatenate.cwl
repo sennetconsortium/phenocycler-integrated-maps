@@ -27,11 +27,16 @@ inputs:
             position: 2
 
 outputs:
-    processed_h5mu_file:
+    raw_h5mu_file:
         type: File
         outputBinding:
             glob: "*.h5mu"
         doc: h5mu file with concatenated codex datasets
+
+    raw_h5ad_file:
+        type: File
+        outputBinding:
+            glob: "*.h5ad"
     
     metadata_json:
         type: File
