@@ -2,12 +2,14 @@ FROM ghcr.io/scverse/rapids-singlecell-cu12:v0.15.0rc4
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-ENV NVIDIA_CONTAINER_TOOLKIT_VERSION=1.19.0-1
-RUN apt-get install -y \
-    nvidia-container-toolkit=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
-    nvidia-container-toolkit-base=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
-    libnvidia-container-tools=${NVIDIA_CONTAINER_TOOLKIT_VERSION} \
-    libnvidia-container1=${NVIDIA_CONTAINER_TOOLKIT_VERSION}
+# Get CUDA toolkit
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cuda-ubuntu2404.pin
+RUN mv cuda-ubuntu2404.pin /etc/apt/preferences.d/cuda-repository-pin-600
+RUN wget https://developer.download.nvidia.com/compute/cuda/13.2.0/local_installers/cuda-repo-ubuntu2404-13-2-local_13.2.0-595.45.04-1_amd64.deb
+RUN dpkg -i cuda-repo-ubuntu2404-13-2-local_13.2.0-595.45.04-1_amd64.deb
+RUN cp /var/cuda-repo-ubuntu2404-13-2-local/cuda-*-keyring.gpg /usr/share/keyrings/
+RUN apt-get update \
+    && apt-get -y install cuda-toolkit-13-2
 
 COPY bin/ /opt
 
