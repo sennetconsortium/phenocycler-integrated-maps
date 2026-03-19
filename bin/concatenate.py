@@ -434,7 +434,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     mdata.write(f"{raw_output_file_name}.h5mu")
 
     # Save data product metadata
-    file_size = os.path.getsize(raw_output_file_name)
+    file_size = os.path.getsize(f"{raw_output_file_name}.h5mu")
     create_json(
         tissue,
         data_product_uuid,
