@@ -24,7 +24,7 @@ RUN add-apt-repository ppa:deadsnakes/ppa
 RUN apt-get -y install \
     python3.9 \
     python3.9-dev \
-    python3.9-pip \
+    python3-pip \
     python3.9-venv \
  && rm -rf /var/cache/apt/*
 
