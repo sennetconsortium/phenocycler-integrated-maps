@@ -20,7 +20,7 @@ RUN apt-get update \
     python3-pip \
     python3-venv \
     zlib1g-dev \
- && rm -rf /var/cache/apt/* \
+ && rm -rf /var/cache/apt/*
 
 ## Python packages
 RUN python3 -m venv /opt/venv
