@@ -6,6 +6,9 @@ requirements:
   DockerRequirement:
     dockerPull: sennet/rsc
   DockerGpuRequirement: {}
+  EnvVarRequirement:
+    envDef:
+      CUDA_VISIBLE_DEVICES: "7"
 baseCommand: /opt/secondary_analysis.py
 
 inputs:
