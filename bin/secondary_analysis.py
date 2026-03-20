@@ -67,7 +67,7 @@ def main(
 
     # Plot
     with plt.rc_context():
-        sc.pl.umap(adata, show=False)
+        sc.pl.umap(adata, color='leiden', show=False)
         plt.savefig(f"{uuid}.png", bbox_inches="tight")
 
     # # Convert to MuData and add Obj x Analyte requirements
