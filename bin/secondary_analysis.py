@@ -50,8 +50,10 @@ def main(
     rsc.pp.neighbors(adata, n_neighbors=50)
     rsc.tl.umap(adata)
 
-    # # leiden clustering, maybe try the use dask param?
-    # rsc.tl.leiden(adata)
+    # Move .X back to the CPU to use regular sc for leiden
+    rsc.get.anndata_to_CPU(adata)
+    # leiden clustering, maybe try the use dask param with rapids?
+    sc.tl.leiden(adata)
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
@@ -60,8 +62,8 @@ def main(
     with open(f"{uuid}.json", "w") as outfile:
         json.dump(metadata, outfile)
 
-    # Move .X back to the CPU to plot
-    rsc.get.anndata_to_CPU(adata)
+    # # Move .X back to the CPU to plot
+    # rsc.get.anndata_to_CPU(adata)
 
     # Plot
     with plt.rc_context():
