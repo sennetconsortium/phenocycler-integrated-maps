@@ -51,9 +51,9 @@ def main(
     rsc.tl.umap(adata)
 
     # Move .X back to the CPU to use regular sc for leiden
-    rsc.get.anndata_to_CPU(adata)
+    # rsc.get.anndata_to_CPU(adata)
     # leiden clustering, maybe try the use dask param with rapids?
-    sc.tl.leiden(adata)
+    rsc.tl.leiden(adata, )
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
@@ -63,7 +63,7 @@ def main(
         json.dump(metadata, outfile)
 
     # # Move .X back to the CPU to plot
-    # rsc.get.anndata_to_CPU(adata)
+    rsc.get.anndata_to_CPU(adata)
 
     # Plot
     with plt.rc_context():
