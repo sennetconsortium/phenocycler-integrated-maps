@@ -53,7 +53,7 @@ def main(
     # Move .X back to the CPU to use regular sc for leiden
     rsc.get.anndata_to_CPU(adata)
     # leiden clustering, maybe try the use dask param with rapids?
-    sc.tl.leiden(adata, )
+    sc.tl.leiden(adata, flavor='igraph')
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
