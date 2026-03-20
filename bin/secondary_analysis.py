@@ -57,6 +57,8 @@ def main(
     metadata = add_cell_counts(
             metadata, total_cell_count
         )
+    with open(f"{uuid}.json", "w") as outfile:
+        json.dump(metadata, outfile)
 
     # Move .X back to the CPU to plot
     rsc.get.anndata_to_CPU(adata)
