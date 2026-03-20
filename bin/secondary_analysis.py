@@ -50,8 +50,8 @@ def main(
     rsc.pp.neighbors(adata, n_neighbors=50)
     rsc.tl.umap(adata)
 
-    # leiden clustering
-    rsc.tl.leiden(adata)
+    # # leiden clustering
+    # rsc.tl.leiden(adata)
 
     total_cell_count = adata.obs.shape[0]
     metadata = add_cell_counts(
@@ -63,7 +63,7 @@ def main(
 
     # Plot
     with plt.rc_context():
-        sc.pl.umap(adata, color="leiden", show=False)
+        sc.pl.umap(adata, show=False)
         plt.savefig(f"{uuid}.png", bbox_inches="tight")
 
     # Convert to MuData and add Obj x Analyte requirements
