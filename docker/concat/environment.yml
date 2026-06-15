@@ -3,13 +3,13 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python==3.10
+  - python<3.13
   - numpy
   - pandas
   - scipy
   - pip
   - pip:
-      - anndata
+      - anndata==0.12.7
       - leidenalg
       - manhole
       - scanpy

@@ -1,7 +1,7 @@
 numpy
 pandas
 scipy
-anndata
+anndata==0.12.7
 leidanalg
 manhole
 scanpy
