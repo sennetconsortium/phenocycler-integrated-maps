@@ -272,7 +272,7 @@ def create_anndata(
     # Store original UMAP cluster assignment
     original_cluster_df = pd.read_csv(original_cluster_file)
     adata.obs["original_sprm_cluster"] = original_cluster_df.loc[
-        original_cluster_df["ID"], ["K-Means [UMAP_All_Features]"]
+        original_cluster_df["ID"].isin(adata.obs["original_obs_id"]), ["K-Means [UMAP_All_Features]"]
     ]
 
     if antibodies_tsv and var_antb_tsv_intersection:
