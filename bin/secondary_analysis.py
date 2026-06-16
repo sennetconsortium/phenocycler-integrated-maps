@@ -70,17 +70,17 @@ def main(
         sc.pl.umap(adata, color='leiden', show=False)
         plt.savefig(f"{uuid}.png", bbox_inches="tight")
 
-    # # Convert to MuData and add Obj x Analyte requirements
-    # if 'annotation' in adata.obsm_keys():
-    #     adata.obsm['annotation']['leiden'] = adata.obs['leiden']
-    # else:
-    #     adata.obsm['annotation'] = pd.DataFrame(adata.obs['leiden'])
-    # adata.obsm['leiden'] = pd.DataFrame(adata.obs['leiden'])
-    # adata.uns['leiden'] = {
-    #     'label': 'Leiden Clusters',
-    #     'mechanism': 'machine',
-    #     'protocol': "10.1186/s13059-017-1382-0",
-    # }
+    # Add Obj x Analyte requirements
+    if 'annotation' in adata.obsm_keys():
+        adata.obsm['annotation']['leiden'] = adata.obs['leiden']
+    else:
+        adata.obsm['annotation'] = pd.DataFrame(adata.obs['leiden'])
+    adata.obsm['leiden'] = pd.DataFrame(adata.obs['leiden'])
+    adata.uns['leiden'] = {
+        'label': 'Leiden Clusters',
+        'mechanism': 'machine',
+        'protocol': "10.1186/s13059-017-1382-0",
+    }
 
     print(f"Writing {processed_output_file_name}")
     adata.write(f"{processed_output_file_name}.h5ad")

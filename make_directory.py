@@ -86,8 +86,9 @@ def main(uuids_file: Path, tissue: str, token = None):
     adjacency_matrix_pattern = Path("aligned_tissue_0_expr.ome.tiff_AdjacencyMatrix.mtx")
     adjacency_matrix_labels_pattern = Path("aligned_tissue_0_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt")
     cell_centers_pattern = Path("aligned_tissue_0_expr.ome.tiff-cell_centers.csv")
+    original_cluster_pattern = Path("aligned_tissue_0_expr.ome.tiff-cell_cluster.csv")
     # antibodies_re = re.compile(r"^extras/.*antibodies.*\.tsv$")
-    file_patterns = [hdf5_pattern, cell_count_pattern, adjacency_matrix_pattern, adjacency_matrix_labels_pattern, cell_centers_pattern]
+    file_patterns = [hdf5_pattern, cell_count_pattern, adjacency_matrix_pattern, adjacency_matrix_labels_pattern, cell_centers_pattern, original_cluster_pattern]
     for uuid, ancestor in zip(processed_uuids, ancestor_uuids):
         # TODO: need to figure out how to find the antibodies tsv with just a regex and not hardcode
         # antibodies_pattern = find_antibodies_tsv(ancestor, antibodies_re, token)

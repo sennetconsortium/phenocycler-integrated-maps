@@ -118,11 +118,13 @@ def find_files_by_type(directory: Path) -> Tuple:
     adjacency_matrix_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrix.mtx"
     adjacency_matrix_labels_pattern = "aligned_tissue_0_expr.ome.tiff_AdjacencyMatrixRowColLabels.txt"
     cell_centers_pattern = "aligned_tissue_0_expr.ome.tiff-cell_centers.csv"
+    original_cluster_pattern = "aligned_tissue_0_expr.ome.tiff-cell_cluster.csv"
     hdf5_files = find_files(directory, hdf5_pattern)
     cell_count_files = find_files(directory, cell_count_pattern)
     adjacency_matrix_files = find_files(directory, adjacency_matrix_pattern)
     adjacency_matrix_labels_files = find_files(directory, adjacency_matrix_labels_pattern)
     cell_centers_files = find_files(directory, cell_centers_pattern)
+    original_clusters_files = find_files(directory, original_cluster_pattern)
     antb_files = find_antibodies_meta(directory)
 
     return (
@@ -131,6 +133,7 @@ def find_files_by_type(directory: Path) -> Tuple:
         adjacency_matrix_files,
         adjacency_matrix_labels_files,
         cell_centers_files,
+        original_clusters_files,
         antb_files
     )
 
@@ -215,6 +218,7 @@ def create_anndata(
     uuids_df: pd.DataFrame,
     cell_centers_file: Path,
     cell_count_file: Path,
+    original_cluster_file: Path,
     data_directory: Path,
     antibodies_tsv: Path,
 ) -> anndata.AnnData:
@@ -264,6 +268,12 @@ def create_anndata(
     adata.obsm["centers"] = cell_centers_df.loc[
         cell_centers_df["ID"].astype(str).isin(adata.obs["original_obs_id"].astype(str)), ["x", "y"]
     ].to_numpy()
+
+    # Store original UMAP cluster assignment
+    original_cluster_df = pd.read_csv(original_cluster_file)
+    adata.obs["original_sprm_cluster"] =original_cluster_df.loc[
+        original_cluster_df["ID"].astype(str).isin(adata.obs["original_obs_id"].astype(str)), ["[K-Means [UMAP_All_Features]"]
+    ]
 
     if antibodies_tsv and var_antb_tsv_intersection:
         uniprot_df, rrid_df, antb_tsv_id_df, hgnc_df = create_varm_dfs(
@@ -325,6 +335,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
     adjacency_matrix_files_list = []
     adjacency_matrix_labels_files_list = []
     cell_centers_files_list = []
+    original_clusters_files_list = []
     antb_files_list = []
     directories = [data_dir / Path(uuid) for uuid in uuids_df["uuid"]]
 
@@ -336,6 +347,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
                 adjacency_matrix_files,
                 adjacency_matrix_labels_files,
                 cell_centers_files,
+                original_clusters_files,
                 antb_files,
             ) = find_files_by_type(directory)
             hdf5_files_list.extend(hdf5_files)
@@ -343,6 +355,7 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
             adjacency_matrix_files_list.extend(adjacency_matrix_files)
             adjacency_matrix_labels_files_list.extend(adjacency_matrix_labels_files)
             cell_centers_files_list.extend(cell_centers_files)
+            original_clusters_files_list.extend(original_clusters_files)
             antb_files_list.extend(antb_files)
 
     # Create the AnnData objects and process adjacency matrices
@@ -356,17 +369,19 @@ def main(data_dir: Path, uuids_tsv: Path, tissue: str):
         adjacency_file,
         label_file,
         cell_count_file,
-        antb_file
+        original_cluster_file,
+        antb_file,
     ) in zip(
         hdf5_files_list,
         cell_centers_files_list,
         adjacency_matrix_files_list,
         adjacency_matrix_labels_files_list,
         cell_count_files_list,
-        antb_files_list
+        original_clusters_files_list,
+        antb_files_list,
     ):
         adata = create_anndata(
-            hdf5_file, tissue, uuids_df, cell_centers_file, cell_count_file, data_dir, antb_file
+            hdf5_file, tissue, uuids_df, cell_centers_file, cell_count_file, original_cluster_file, data_dir, antb_file
         )
         adatas.append(adata)
         # Save the values in .varm
