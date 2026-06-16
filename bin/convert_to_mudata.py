@@ -23,6 +23,8 @@ def main(processed_h5ad, metadata, tissue=None):
     mdata.write(f"{output_file_name}.h5mu")
     processed_file_size = os.path.getsize(f"{output_file_name}.h5mu")
     add_file_sizes(metadata, processed_file_size)
+    with open(f"{uuid}.json", "w") as outfile:
+        json.dump(metadata, outfile)
 
 
 if __name__ == "__main__":
