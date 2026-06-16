@@ -252,6 +252,11 @@ def create_anndata(
     adata.obs["original_obs_id"] = adata.obs.index
     adata.obs["dataset"] = str(data_set_dir)
     adata.obs["tissue"] = tissue_type
+    original_cluster_df = pd.read_csv(original_cluster_file)
+    adata.obs["original_sprm_cluster"] = original_cluster_df.loc[
+        original_cluster_df["ID"], ["K-Means [UMAP_All_Features]"]
+    ]
+    print(adata.obs['original_sprm_cluster'])
 
     # Set index for cell IDs
     cell_ids_list = ["-".join([data_set_dir, cell_id]) for cell_id in adata.obs["original_obs_id"]]
@@ -268,12 +273,6 @@ def create_anndata(
     adata.obsm["centers"] = cell_centers_df.loc[
         cell_centers_df["ID"].astype(int).isin(adata.obs["original_obs_id"].astype(int)), ["x", "y"]
     ].to_numpy()
-
-    # Store original UMAP cluster assignment
-    original_cluster_df = pd.read_csv(original_cluster_file)
-    adata.obs["original_sprm_cluster"] = original_cluster_df.loc[
-        original_cluster_df["ID"].astype(int).isin(adata.obs["original_obs_id"].astype(int)), ["K-Means [UMAP_All_Features]"]
-    ]
 
     if antibodies_tsv and var_antb_tsv_intersection:
         uniprot_df, rrid_df, antb_tsv_id_df, hgnc_df = create_varm_dfs(
