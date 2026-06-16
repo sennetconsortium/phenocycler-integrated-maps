@@ -29,7 +29,7 @@ outputs:
     processed_h5ad:
         type: File
         outputBinding:
-            glob: "*_processed.h5ad"
+            glob: "*_processed.h5mu"
         doc: h5ad file with processed phenocycler datasets
 
     final_metadata_json:
