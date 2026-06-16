@@ -271,6 +271,7 @@ def create_anndata(
 
     # Store original UMAP cluster assignment
     original_cluster_df = pd.read_csv(original_cluster_file)
+    print(original_cluster_df.head())
     adata.obs["original_sprm_cluster"] =original_cluster_df.loc[
         original_cluster_df["ID"].astype(str).isin(adata.obs["original_obs_id"].astype(str)), ["[K-Means [UMAP_All_Features]"]
     ]
